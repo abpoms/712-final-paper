@@ -1,0 +1,128 @@
+% --------------- 12 POINT FONT -------------------------------
+\documentclass[twocolumn,10pt]{article}
+
+% --------------- 10 POINT FONT FOR CAPTIONS ------------------
+\usepackage[font=footnotesize]{caption}
+
+\usepackage[T1]{fontenc}
+
+% --------------- 1 INCH MARGINS ------------------------------
+\usepackage[margin=1in]{geometry}
+
+% --------------- LINE SPACING --------------------------------
+\usepackage{setspace}
+\singlespacing
+%\doublespacing
+
+\usepackage{multicol}
+\setlength{\columnsep}{1cm}
+
+% --------------- MATH PACKAGES -------------------------------
+\usepackage{amsmath,amsthm,amssymb}
+
+\begin{document}
+
+\title{Processing collections of images and videos on big-data frameworks}
+\author{Alex Poms, Ravi Teja Mullapudi, \\Suhail Rehman}
+
+\maketitle
+
+
+% --------------- CONTENT -------------------------------------
+\section{Introduction}
+Images and video already dominate internet traffic and occupy a significant
+amount of datacenter storage. The Cisco Visual Networking Index predicts that
+IP video traffic will consume over 80\% of total internet bandwidth in 2019. In
+2009, Facebook reported 1.5PB of image storage with 25TB added weekly and
+550,000 images served per second at peak. This visual data is mostly just
+served directly to a human user for viewing. However, recent advances in
+computer vision, such as feasible image/object understanding and reconstruction
+of 3D structure from image collections, motivate large-scale analysis of images
+and videos for deriving insights and information that is not accessible from
+other sources. For example, a relief organization could automatically
+reconstruct the damage done by a natural disaster by having vehicles with
+mounted cameras observe the affected area or a state could perform automatic
+demographics estimation by analyzing the public Facebook profile photos of
+their residents.
+
+Currently, visual computing applications are few and far between due to the
+inherent complexities of working with large visual datasets. The most apparent
+of these difficulties is that the massive size of the datasets vastly exceed
+the storage and computational capacity of a single machine. Thus any
+application must be distributed and parallelized across a large cluster,
+managing data transfer and communication between nodes. Unlike traditional
+analytics workloads, visual computing applications also require highly tuned
+and efficient image processing kernels that take advantage of the heterogeneous
+hardware increasingly seen in cloud infrastructure, such as throughput-oriented
+accelerators including GPUs and even FPGAs. Having a predefined set of
+optimized implementations is not enough because image processing pipelines
+require global code restructuring that crosses function boundaries; each
+application may require custom image processing code that is composed with
+other functionality. Lastly, visual computing applications exhibit tight
+coupling between traditional analytics operations, such as those of Spark
+\cite{zaharia2012resilient} and MapReduce \cite{dean2008mapreduce}, and
+non-streaming operations, like distributed optimization or graph processing.
+
+It is unclear if existing systems can simultaneously satisfy these three
+requirements. Systems optimized for analytics operations, like Spark, tend to
+sacrifice explicit access to their data collections that prohibit efficient
+integration of non-streaming operations. Analytics systems also lack the
+ability to specialize user routines to heterogeneous hardware resources. On the
+other hand, systems that perform non-streaming operations, like the Parameter
+Server \cite{li2014scaling}, generally lack the flexibility in their
+programming model to allow direct incorporation of streaming operations like
+map, filter, or reduce.
+
+\section{Background}
+
+\subsection{Spark}
+
+\subsection{Legion}
+
+\subsection{SciDB}
+
+
+\section{Workloads}
+
+\subsection{High-performance map kernel}
+
+\subsection{Clustering}
+
+%\subsection{Filter clustering}
+
+\section{Distributed collections on Legion}
+
+\subsection{}
+
+\subsection{Task scheduling}
+
+\subsection{KMeans Implementation}
+
+\section{Evaluation}
+
+\subsection{Spark vs Legion}
+
+\subsection{SciDB vs MPI}
+
+\section{Discussion}
+
+\subsection{Native code on Spark}
+
+\subsection{Improving distributed collection abstractions}
+
+\subsubsection{Batch size}
+
+\subsubsection{Iterators}
+
+\subsection{Improving SciDB}
+
+\section{Conclusions}
+
+\bibliographystyle{plain}
+\bibliography{final}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
