@@ -1,32 +1,39 @@
 % --------------- 12 POINT FONT -------------------------------
-\documentclass[twocolumn,10pt]{article}
+\documentclass[tog]{acmsiggraph}
 
 % --------------- 10 POINT FONT FOR CAPTIONS ------------------
-\usepackage[font=footnotesize]{caption}
 
-\usepackage[T1]{fontenc}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+%%% Make the ``BibTeX'' word pretty...
 
-% --------------- 1 INCH MARGINS ------------------------------
-\usepackage[margin=1in]{geometry}
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-% --------------- LINE SPACING --------------------------------
-\usepackage{setspace}
-\singlespacing
-%\doublespacing
+%%% Used by the ``review'' variation; the online ID will be printed on 
+%%% every page of the content.
 
-\usepackage{multicol}
-\setlength{\columnsep}{1cm}
+\TOGonlineid{45678}
+
+%%% Used by the ``preprint'' variation.
+
+\TOGvolume{0}
+\TOGnumber{0}
 
 % --------------- MATH PACKAGES -------------------------------
 \usepackage{amsmath,amsthm,amssymb}
 
-\begin{document}
-
 \title{Processing collections of images and videos on big-data frameworks}
 \author{Alex Poms, Ravi Teja Mullapudi, \\Suhail Rehman}
+\pdfauthor{Alex Poms, Ravi Teja Mullapudi, \\Suhail Rehman}
+
+\begin{document}
+
 
 \maketitle
 
+\begin{abstract}
+\end{abstract}
 
 % --------------- CONTENT -------------------------------------
 \section{Introduction}
@@ -118,7 +125,8 @@ map, filter, or reduce.
 
 \section{Conclusions}
 
-\bibliographystyle{plain}
+\bibliographystyle{acmsiggraph}
+\nocite{*}
 \bibliography{final}
 
 \end{document}
