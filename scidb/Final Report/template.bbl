@@ -1,0 +1,270 @@
+\begin{thebibliography}{10}
+
+\bibitem{S3}
+{Amazon S3}.
+\newblock \url{http://aws.amazon.com/S3}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{storm}
+{Apache Storm}.
+\newblock \url{https://storm.apache.org/}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{BBB}
+{Big Buck Bunny}.
+\newblock \url{https://peach.blender.org/}.
+\newblock Accessed: 2015-11-01.
+
+\bibitem{cudaconvnet}
+{cuda-convnet2}.
+\newblock \url{https://github.com/akrizhevsky/cuda-convnet2}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{protobuf}
+{Google Developers : Protocol Buffers}.
+\newblock \url{https://code.google.com/p/protobuf/}.
+\newblock Accessed: 2015-09-25.
+
+\bibitem{levelDB}
+{LevelDB}.
+\newblock \url{http://leveldb.org/}.
+\newblock Accessed: 2015-09-25.
+
+\bibitem{oracle}
+{Oracle GeoRaster}.
+\newblock
+  \url{http://www.oracle.com/technetwork/database/options/spatialandgraph/overview/index.html}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{Rasdaman}
+{Rasdaman Array Database}.
+\newblock \url{http://rasdaman.org/}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{SciDBManual}
+{SciDB Online Manual}.
+\newblock \url{http://www.paradigm4.com/HTMLmanual/15.7/scidb_ug/}.
+\newblock Accessed: 2015-11-01.
+
+\bibitem{SciDBPy}
+{SciDB-Py Documentation}.
+\newblock \url{http://scidb-py.readthedocs.org/en/latest/index.html}.
+\newblock Accessed: 2015-11-01.
+
+\bibitem{stormCV}
+{StormCV}.
+\newblock \url{https://github.com/sensorstorm/StormCV}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{blobstore}
+{Twitter Blobstore}.
+\newblock
+  \url{https://blog.twitter.com/2012/blobstore-twitter%E2%80%99s-house-photo-storage-system}.
+\newblock Accessed: 2015-10-09.
+
+\bibitem{ISO:SQL}
+{SQL — Part 1: Framework (SQL/Framework)}.
+\newblock {ISO} 9075-1:2011, 2011.
+
+\bibitem{DBLP:journals/corr/AgrawalMGCBMOB15}
+{\sc Agrawal, H., Mathialagan, C.~S., Goyal, Y., Chavali, N., Banik, P.,
+  Mohapatra, A., Osman, A., and Batra, D.}
+\newblock Cloudcv: Large scale distributed computer vision as a cloud service.
+\newblock {\em CoRR abs/1506.04130\/} (2015).
+
+\bibitem{baumann}
+{\sc Baumann, P.}
+\newblock Management of multidimensional discrete data.
+\newblock {\em The VLDB Journal 3}, 4 (1994), 401--444.
+
+\bibitem{Baumann:1998}
+{\sc Baumann, P., Dehmel, A., Furtado, P., Ritsch, R., and Widmann, N.}
+\newblock The multidimensional database system rasdaman.
+\newblock In {\em Proceedings of the 1998 ACM SIGMOD International Conference
+  on Management of Data\/} (New York, NY, USA, 1998), SIGMOD '98, ACM,
+  pp.~575--577.
+
+\bibitem{beaver2010finding}
+{\sc Beaver, D., Kumar, S., Li, H.~C., Sobel, J., Vajgel, P., et~al.}
+\newblock Finding a needle in haystack: Facebook's photo storage.
+\newblock In {\em OSDI\/} (2010), vol.~10, pp.~1--8.
+
+\bibitem{camara2008terralib}
+{\sc C{\^a}mara, G., Vinhas, L., Ferreira, K.~R., De~Queiroz, G.~R., De~Souza,
+  R. C.~M., Monteiro, A. M.~V., De~Carvalho, M.~T., Casanova, M.~A., and
+  De~Freitas, U.~M.}
+\newblock Terralib: An open source gis library for large-scale environmental
+  and socio-economic applications.
+\newblock In {\em Open source approaches in spatial data handling}. Springer,
+  2008, pp.~247--270.
+
+\bibitem{chilimbi2014project}
+{\sc Chilimbi, T., Suzue, Y., Apacible, J., and Kalyanaraman, K.}
+\newblock Project adam: Building an efficient and scalable deep learning
+  training system.
+\newblock In {\em 11th USENIX Symposium on Operating Systems Design and
+  Implementation (OSDI 14)\/} (2014), pp.~571--582.
+
+\bibitem{ASI:ASI1153}
+{\sc Chu, H.}
+\newblock Research in image indexing and retrieval as reflected in the
+  literature.
+\newblock {\em Journal of the American Society for Information Science and
+  Technology 52}, 12 (2001), 1011--1018.
+
+\bibitem{Cudre-Mauroux:2009:DSS:1687553.1687584}
+{\sc Cudre-Mauroux, P., Kimura, H., Lim, K.-T., Rogers, J., Simakov, R.,
+  Soroush, E., Velikhov, P., Wang, D.~L., Balazinska, M., Becla, J., DeWitt,
+  D., Heath, B., Maier, D., Madden, S., Patel, J., Stonebraker, M., and Zdonik,
+  S.}
+\newblock A demonstration of scidb: A science-oriented dbms.
+\newblock {\em Proc. VLDB Endow. 2}, 2 (Aug. 2009), 1534--1537.
+
+\bibitem{Datta:2008}
+{\sc Datta, R., Joshi, D., Li, J., and Wang, J.~Z.}
+\newblock Image retrieval: Ideas, influences, and trends of the new age.
+\newblock {\em ACM Comput. Surv. 40}, 2 (May 2008), 5:1--5:60.
+
+\bibitem{icml2014c1_donahue14}
+{\sc Donahue, J., Jia, Y., Vinyals, O., Hoffman, J., Zhang, N., Tzeng, E., and
+  Darrell, T.}
+\newblock Decaf: A deep convolutional activation feature for generic visual
+  recognition.
+\newblock In {\em Proceedings of the 31st International Conference on Machine
+  Learning (ICML-14)\/} (2014), T.~Jebara and E.~P. Xing, Eds., JMLR Workshop
+  and Conference Proceedings, pp.~647--655.
+
+\bibitem{gu2012content}
+{\sc Gu, C., and Gao, Y.}
+\newblock A content-based image retrieval system based on hadoop and lucene.
+\newblock In {\em Cloud and Green Computing (CGC), 2012 Second International
+  Conference on\/} (2012), IEEE, pp.~684--687.
+
+\bibitem{django}
+{\sc Holovaty, A., and Kaplan-Moss, J.}
+\newblock {\em The definitive guide to Django: Web development done right}.
+\newblock Apress, 2009.
+
+\bibitem{huiskes08}
+{\sc Huiskes, M.~J., and Lew, M.~S.}
+\newblock The mir flickr retrieval evaluation.
+\newblock In {\em MIR '08: Proceedings of the 2008 ACM International Conference
+  on Multimedia Information Retrieval\/} (New York, NY, USA, 2008), ACM.
+
+\bibitem{6632112}
+{\sc Jai-Andaloussi, S., Elabdouli, A., Chaffai, A., Madrane, N., and Sekkaki,
+  A.}
+\newblock Medical content based image retrieval by using the hadoop framework.
+\newblock In {\em Telecommunications (ICT), 2013 20th International Conference
+  on\/} (May 2013), pp.~1--5.
+
+\bibitem{Jia:2014}
+{\sc Jia, Y., Shelhamer, E., Donahue, J., Karayev, S., Long, J., Girshick, R.,
+  Guadarrama, S., and Darrell, T.}
+\newblock Caffe: Convolutional architecture for fast feature embedding.
+\newblock In {\em Proceedings of the ACM International Conference on
+  Multimedia\/} (New York, NY, USA, 2014), MM '14, ACM, pp.~675--678.
+
+\bibitem{Li:2014:SDM:2685048.2685095}
+{\sc Li, M., Andersen, D.~G., Park, J.~W., Smola, A.~J., Ahmed, A., Josifovski,
+  V., Long, J., Shekita, E.~J., and Su, B.-Y.}
+\newblock Scaling distributed machine learning with the parameter server.
+\newblock In {\em Proceedings of the 11th USENIX Conference on Operating
+  Systems Design and Implementation\/} (Berkeley, CA, USA, 2014), OSDI'14,
+  USENIX Association, pp.~583--598.
+
+\bibitem{Libkin:1996}
+{\sc Libkin, L., Machlin, R., and Wong, L.}
+\newblock A query language for multidimensional arrays: Design, implementation,
+  and optimization techniques.
+\newblock In {\em Proceedings of the 1996 ACM SIGMOD International Conference
+  on Management of Data\/} (New York, NY, USA, 1996), SIGMOD '96, ACM,
+  pp.~228--239.
+
+\bibitem{low2012distributed}
+{\sc Low, Y., Bickson, D., Gonzalez, J., Guestrin, C., Kyrola, A., and
+  Hellerstein, J.~M.}
+\newblock Distributed graphlab: a framework for machine learning and data
+  mining in the cloud.
+\newblock {\em Proceedings of the VLDB Endowment 5}, 8 (2012), 716--727.
+
+\bibitem{Moyers:2013:DIP:2536274.2536306}
+{\sc Moyers, M., Soroush, E., Wallace, S.~C., Krughoff, S., Vanderplas, J.,
+  Balazinska, M., and Connolly, A.}
+\newblock A demonstration of iterative parallel array processing in support of
+  telescope image analysis.
+\newblock {\em Proc. VLDB Endow. 6}, 12 (Aug. 2013), 1322--1325.
+
+\bibitem{f4}
+{\sc Muralidhar, S., Lloyd, W., Roy, S., Hill, C., Lin, E., Liu, W., Pan, S.,
+  Shankar, S., Sivakumar, V., Tang, L., and Kumar, S.}
+\newblock f4: Facebook{\textquoteright}s warm blob storage system.
+\newblock In {\em 11th USENIX Symposium on Operating Systems Design and
+  Implementation (OSDI 14)\/} (Broomfield, CO, Oct. 2014), USENIX Association,
+  pp.~383--398.
+
+\bibitem{obe2011postgis}
+{\sc Obe, R., and Hsu, L.}
+\newblock {\em PostGIS in action}.
+\newblock Manning Publications Co., 2011.
+
+\bibitem{owen2011mahout}
+{\sc Owen, S., Anil, R., Dunning, T., and Friedman, E.}
+\newblock {\em Mahout in action}.
+\newblock Manning Shelter Island, 2011.
+
+\bibitem{planthaber2012earthdb}
+{\sc Planthaber, G., Stonebraker, M., and Frew, J.}
+\newblock Earthdb: scalable analysis of modis data using scidb.
+\newblock In {\em Proceedings of the 1st ACM SIGSPATIAL International Workshop
+  on Analytics for Big Geospatial Data\/} (2012), ACM, pp.~11--19.
+
+\bibitem{premchaiswadi2013improving}
+{\sc Premchaiswadi, W., Tungkatsathan, A., Intarasema, S., and Premchaiswadi,
+  N.}
+\newblock Improving performance of content-based image retrieval schemes using
+  hadoop mapreduce.
+\newblock In {\em High Performance Computing and Simulation (HPCS), 2013
+  International Conference on\/} (2013), IEEE, pp.~615--620.
+
+\bibitem{1508203}
+{\sc Robles, O., Bosque, J., Pastor, L., and Rodriguez, A.}
+\newblock Performance analysis of a cbir system on shared-memory systems and
+  heterogeneous clusters.
+\newblock In {\em Computer Architecture for Machine Perception, 2005. CAMP
+  2005. Proceedings. Seventh International Workshop on\/} (July 2005),
+  pp.~309--314.
+
+\bibitem{DBLP:journals/corr/SermanetEZMFL13}
+{\sc Sermanet, P., Eigen, D., Zhang, X., Mathieu, M., Fergus, R., and LeCun,
+  Y.}
+\newblock Overfeat: Integrated recognition, localization and detection using
+  convolutional networks.
+\newblock {\em CoRR abs/1312.6229\/} (2013).
+
+\bibitem{stonebraker2011architecture}
+{\sc Stonebraker, M., Brown, P., Poliakov, A., and Raman, S.}
+\newblock {The architecture of SciDB}.
+\newblock In {\em Scientific and Statistical Database Management\/} (2011),
+  Springer, pp.~1--16.
+
+\bibitem{stonebraker2013scidb}
+{\sc Stonebraker, M., Brown, P., Zhang, D., and Becla, J.}
+\newblock {SciDB: A database management system for applications with complex
+  analytics}.
+\newblock {\em Computing in Science \& Engineering 15}, 3 (2013), 54--62.
+
+\bibitem{van2014scikit}
+{\sc Van Der~Walt, S., Sch{\"o}nberger, J.~L., Nunez-Iglesias, J., Boulogne,
+  F., Warner, J.~D., Yager, N., Gouillart, E., and Yu, T.}
+\newblock scikit-image: image processing in python.
+\newblock {\em PeerJ 2\/} (2014), e453.
+
+\bibitem{Wan:2014}
+{\sc Wan, J., Wang, D., Hoi, S. C.~H., Wu, P., Zhu, J., Zhang, Y., and Li, J.}
+\newblock Deep learning for content-based image retrieval: A comprehensive
+  study.
+\newblock In {\em Proceedings of the ACM International Conference on
+  Multimedia\/} (New York, NY, USA, 2014), MM '14, ACM, pp.~157--166.
+
+\end{thebibliography}
