@@ -91,37 +91,116 @@ map, filter, or reduce.
 \section{Background}
 
 \subsection{Spark}
+Spark \cite{zaharia2012resilient} is a large-scale data processing framework
+for operating on distributed collections. Spark derives much of its design from
+MapReduce \cite{dean2008mapreduce} but extends the abstractions provided by
+MapReduce in two key ways: (1) composition of operations to into a lazy series
+of operations and (2) in-memory fault-tolerance by allowing lost partitions to
+be recomputed based on tracking the lazy series of operations (which they call
+a \textit{lineage}).
+
+% Spark Programming Model
+A Spark user constructs a program by specifying a series of
+\texit{transformation} operations on immutable distributed collections (called
+\texit{RDDs}) that source their data from some stable storage (such as
+HDFS). Spark does not perform any of these transformations until an
+\textit{action} has been specified. Actions are operations which write data out
+to a stable storage system or return results back to the user's driver
+program.
+
+% Spark Implementation
+
+Conceptually, Spark programs are split into two types of stages. The first type
+of stage, which they call a Result Stage, consists of series of point-wise
+operations (such as map, filter, flatmap, etc.). The second type of stage,
+which they call a Shuffle Stage, is composed of mapper nodes which write key
+value pairs to local partitions followed by reducer nodes which fetch those
+partitions based upon an assigned key and perform some a reduction operation on
+all values belonging to a single key. The Shuffle Stage is exactly equivalent
+to the Map and Reduce phases provided by the MapReduce programming model except
+that partitions need not be written to disk before being collected by
+reducers. The Result Stage does not have a direct parallel to anything in
+MapReduce but is key to enabling the lazy programming model that Spark provides
+to users. Spark implements a Result Stage by \textit{fusing} point-wise
+operations together such that for each element in the input, Spark will execute
+all transformations on that individual element before operating on any other
+elements in the collection. Fusion is used by Spark to minimize the working set
+size and thus support out-of-core collections efficiently but also has the side
+benefit of optimizing for \textit{locality} because values are utilized
+immediately after they are computed.
+
+% Spark issues
 
 \subsection{Legion}
 
 \subsection{SciDB}
-SciDB\cite{stonebraker2013scidb} is a computational array DBMS designed to cater to the data storage needs of the scientific community. SciDB is designed to be multi-dimensional, with an array-based data model. It also provides support for data versioning and provenance which is a oft-cited feature requirement of data management systems from scientists.
+SciDB\cite{stonebraker2013scidb} is a computational array DBMS designed to
+cater to the data storage needs of the scientific community. SciDB is designed
+to be multi-dimensional, with an array-based data model. It also provides
+support for data versioning and provenance which is a oft-cited feature
+requirement of data management systems from scientists.
 
-SciDB arrays are expressed in terms of two basic parameters:  the {\em dimensions} of the array, as well as {\em attributes} of the array. 
+SciDB arrays are expressed in terms of two basic parameters: the {\em
+dimensions} of the array, as well as {\em attributes} of the array.
 
-An n-dimensional SciDB array has dimensions ($d_{1}$, $d_{2}$,$...$,$d_{n}$). The {\em size} of each dimension is the number of ordered values in that dimension. For example, a 2-dimensional array may have dimensions $i$ and $j$, each with values $(1, 2, 3, ..., 10)$ and $(1, 2, ..., 30)$ respectively. SciDB uses 64-bit integers to represent the values in each dimension, but also support non-integer dimensions such as variable-length strings or floating point integers. Furthermore, SciDB supports the notion of dimensional bounds. When the total value of a dimension is known in advance, the array can be declared with a {\em bounded} dimension. Sometimes, the cardinality of the array may not be known at array creation time. In such cases, the array can be declared with an {\em unbounded} dimension. It must be noted, however, that certain array operations are restricted to arrays with integer bounded dimensions.
+An n-dimensional SciDB array has dimensions ($d_{1}$,
+$d_{2}$,$...$,$d_{n}$). The {\em size} of each dimension is the number of
+ordered values in that dimension. For example, a 2-dimensional array may have
+dimensions $i$ and $j$, each with values $(1, 2, 3, ..., 10)$ and $(1, 2, ...,
+30)$ respectively. SciDB uses 64-bit integers to represent the values in each
+dimension, but also support non-integer dimensions such as variable-length
+strings or floating point integers. Furthermore, SciDB supports the notion of
+dimensional bounds. When the total value of a dimension is known in advance,
+the array can be declared with a {\em bounded} dimension. Sometimes, the
+cardinality of the array may not be known at array creation time. In such
+cases, the array can be declared with an {\em unbounded} dimension. It must be
+noted, however, that certain array operations are restricted to arrays with
+integer bounded dimensions.
 
-In addition to the dimension size attributes, the user must define two parameters for each dimension: the {\em chunk size} and {\em chunk overlap} parameters. These parameters affect the distribution of the array data among the worker nodes and need to be studied with respect to their effect on the performance of the image operations that we intend to deploy in SciDB.
+In addition to the dimension size attributes, the user must define two
+parameters for each dimension: the {\em chunk size} and {\em chunk overlap}
+parameters. These parameters affect the distribution of the array data among
+the worker nodes and need to be studied with respect to their effect on the
+performance of the image operations that we intend to deploy in SciDB.
 
-An n dimensional array in SciDB refers to a single cell or element of an array. However, each array in the SciDB array can hold multiple data values known as {\em attributes}. Each data value is referred to as an {\em attribute}, and can be any of the supported data types in SciDB.
+An n dimensional array in SciDB refers to a single cell or element of an
+array. However, each array in the SciDB array can hold multiple data values
+known as {\em attributes}. Each data value is referred to as an {\em
+attribute}, and can be any of the supported data types in SciDB.
 
-Therefore, during the creation of an array in SciDB (analogous to the declaration of a table schema in a relational database), the user must specify:
+Therefore, during the creation of an array in SciDB (analogous to the
+declaration of a table schema in a relational database), the user must specify:
 
 \begin{itemize}
-\item An array name - a simple string which can be used to refer to the array in all operations involving the array.
-\item The dimensions of the array. The name and size of each dimension must be declared, with the exception of unbounded dimensions, whose size is represented using the asterisk character (\texttt{*}).
-\item At least one attribute for the array. Attributes can be added to an array as the result of an operation in SciDB.
+\item An array name - a simple string which can be used to refer to the array
+in all operations involving the array.
+\item The dimensions of the array. The name and size of each dimension must be
+declared, with the exception of unbounded dimensions, whose size is represented
+using the asterisk character (\texttt{*}).
+\item At least one attribute for the array. Attributes can be added to an array
+as the result of an operation in SciDB.
 \end{itemize}
 
 An example of an array definition in SciDB is given below:
 
 \begin{lstlisting}[caption=Creating an Array in SciDB, frame=single]
-AQL% CREATE ARRAY open <val:double>[I=0:9,10,0,J=0:*,10,0];
+AQL \% CREATE ARRAY open <val:double>[I=0:9,10,0,J=0:*,10,0];
 \end{lstlisting}
 
-In the example, the name of the array is \texttt{open}, with one attribute named \texttt{val}, of type \texttt{double}. This array consists of two dimensions, \texttt{I} and \texttt{J}. \texttt{I} is a bounded dimension with values ranging from 0 to 9, with chunk size 10 and chunk overlap 0. \texttt{J} another dimension similar to \texttt{I}, but the size of this dimension is unbounded.
+In the example, the name of the array is \texttt{open}, with one attribute
+named \texttt{val}, of type \texttt{double}. This array consists of two
+dimensions, \texttt{I} and \texttt{J}. \texttt{I} is a bounded dimension with
+values ranging from 0 to 9, with chunk size 10 and chunk overlap 0. \texttt{J}
+another dimension similar to \texttt{I}, but the size of this dimension is
+unbounded.
 
-SciDB is designed to perform a number of operations on Arrays. An extensive listing of array operations is beyond the scope of this document, the interested reader is referred to the SciDB manual\cite{SciDBManual}. However, the operations that can be performed on an array can be broadly classified into the following: array selection, array operations (such as cross product, joins etc.), aggregation operations (which can return either arrays or scalars) and so on.
+SciDB is designed to perform a number of operations on Arrays. An extensive
+listing of array operations is beyond the scope of this document, the
+interested reader is referred to the SciDB manual\cite{SciDBManual}. However,
+the operations that can be performed on an array can be broadly classified into
+the following: array selection, array operations (such as cross product, joins
+etc.), aggregation operations (which can return either arrays or scalars) and
+so on.
 
 \section{Workloads}
 Visual data applications contain a diverse set of operations, but a few of them
@@ -137,6 +216,9 @@ videos, it must at least support very efficient and scalable implementations of
 the following operations:
 
 \subsection{High-performance map kernel}
+An image is not simply an array of bytes. Images represent a set of
+spatially-coherent samples over a regular grid. Processing an image into useful
+information requires acknowledging this representation.
 
 \subsection{Clustering}
 
@@ -146,6 +228,10 @@ the following operations:
 
 \subsection{}
 
+% impedance mismatch with fixed sized regions
+%% Larger than memory
+%% Dynamic amplification and decimation
+
 \subsection{Task scheduling}
 
 \subsection{KMeans Implementation}
@@ -154,39 +240,71 @@ the following operations:
 
 \subsection{Spark vs Legion}
 
+\subsubsection{High-performance Map Kernel}
+% Communication latency
+%% Spark 86.5% compute
+%% Legion 68% compute
+
 \subsubsection{Partition startup time}
 
 \subsection{SciDB vs MPI}\label{sec:clusterexp}
-In this section, we compare the runtime of the image processing operations in SciDB against their MPI counterparts. 
+In this section, we compare the runtime of the image processing operations in
+SciDB against their MPI counterparts.
 
-\begin{figure*}[htp]
-\centering
-	\subfigure[WIA]{\label{fig:wia}\includegraphics[width=0.45\textwidth]{figures/wia.eps}} \hspace{1 em}
-    \subfigure[IPE]{\label{fig:ipe}\includegraphics[width=0.4\textwidth]{figures/ipe.eps}}
-	\subfigure[CONV]{\label{fig:conv}\includegraphics[width=0.5\textwidth]{figures/convo.eps}} \hspace{1 em}
-    \subfigure[APNN]{\label{fig:apnn}\includegraphics[width=0.85\textwidth]{figures/apnn.eps}}
-	\caption{Performance of Image Operations in SciDB versus the Baseline MPI Versions. All run-times are the average of 3 runs, with variation being within \~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish running even after 6 hours.}
+\begin{figure*}[htp] \centering
+\subfigure[WIA]{\label{fig:wia}\includegraphics[width=0.45\textwidth]{figures/wia.eps}}
+\hspace{1 em}
+\subfigure[IPE]{\label{fig:ipe}\includegraphics[width=0.4\textwidth]{figures/ipe.eps}}
+\subfigure[CONV]{\label{fig:conv}\includegraphics[width=0.5\textwidth]{figures/convo.eps}}
+\hspace{1 em}
+\subfigure[APNN]{\label{fig:apnn}\includegraphics[width=0.85\textwidth]{figures/apnn.eps}}
+	\caption{Performance of Image Operations in SciDB versus the Baseline MPI
+Versions. All run-times are the average of 3 runs, with variation being within
+\~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish
+running even after 6 hours.}
 	\label{fig:mpi_result}
 \end{figure*}
 
-\textbf{Weighted Image Average}: In Figure \ref{fig:wia}, we see the runtime of SciDB for the WIA benchmark for 10, 100 and 1000 images on the 16 node cluster. The MPI version of this operation is roughly between $21\times$ to $91\times$ faster than the SciDB counterpart for the same operation.
+\textbf{Weighted Image Average}: In Figure \ref{fig:wia}, we see the runtime of
+SciDB for the WIA benchmark for 10, 100 and 1000 images on the 16 node
+cluster. The MPI version of this operation is roughly between $21\times$ to
+$91\times$ faster than the SciDB counterpart for the same operation.
 
-\textbf{Image Patch Extraction}: 
-In Figure \ref{fig:ipe}, we see the runtime of SciDB for the IPE benchmark (fixed patches) when varying the dataset size. Unlike the WIA benchmark, where the entire image volume was flattened to a single image, the IPE benchmark shows significant improvement in runtime and is within an order of magnitude in terms of performance when compared to the baseline MPI version, as the $100\times100$ image patch extraction and averaging of a 1000 1080p images is only $\sim 2.14\times$ slower than its corresponding MPI version.
+\textbf{Image Patch Extraction}: In Figure \ref{fig:ipe}, we see the runtime of
+SciDB for the IPE benchmark (fixed patches) when varying the dataset
+size. Unlike the WIA benchmark, where the entire image volume was flattened to
+a single image, the IPE benchmark shows significant improvement in runtime and
+is within an order of magnitude in terms of performance when compared to the
+baseline MPI version, as the $100\times100$ image patch extraction and
+averaging of a 1000 1080p images is only $\sim 2.14\times$ slower than its
+corresponding MPI version.
 
-\textbf{Convolution} In Figure \ref{fig:conv}, we compare the performance of the MPI baseline that performs convolution on a set of images against the SciDB \texttt{window()} function, which performs the equivalent operation. Again, SciDB is an order of magnitude slower than the MPI implementation across the board.
+\textbf{Convolution} In Figure \ref{fig:conv}, we compare the performance of
+the MPI baseline that performs convolution on a set of images against the SciDB
+\texttt{window()} function, which performs the equivalent operation. Again,
+SciDB is an order of magnitude slower than the MPI implementation across the
+board.
 
-\textbf{All Pairs Nearest Neighbours}: For the APNN benchmark, we perform the APNN step with an additional set of images: 10, 100 and 1000 64x64 thumbnails (Figure \ref{fig:apnn}. The missing data-points indicate SciDB failing to finish execution even after ~6 hours of runtime. 
+\textbf{All Pairs Nearest Neighbours}: For the APNN benchmark, we perform the
+APNN step with an additional set of images: 10, 100 and 1000 64x64 thumbnails
+(Figure \ref{fig:apnn}. The missing data-points indicate SciDB failing to
+finish execution even after ~6 hours of runtime.
 
 
-\subsubsection{Timing Breakdown and Analysis}\label{sec:breakdown}
-We now provide the timing breakdown for two of the operations of interest, the WIA and APNN benchmarks in Figure \ref{fig:breakdown}. We can see from the figures that the runtime for these queries is dominated by the cross join query, more so for APNN.
+\subsubsection{Timing Breakdown and Analysis}\label{sec:breakdown} We now
+provide the timing breakdown for two of the operations of interest, the WIA and
+APNN benchmarks in Figure \ref{fig:breakdown}. We can see from the figures that
+the runtime for these queries is dominated by the cross join query, more so for
+APNN.
 
-\begin{figure*}[htp]
-\centering
-	\subfigure[WIA]{\label{fig:wiabreak}\includegraphics[width=0.50\textwidth]{figures/wia_breakdown.eps}} \hspace{1 em}
-    \subfigure[APNN]{\label{fig:apnnbreak}\includegraphics[width=0.45\textwidth]{figures/apnn_breakdown.eps}}
-	\caption{Performance of Image Operations in SciDB versus the Baseline MPI Versions. All run-times are the average of 3 runs, with variation being within \~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish running even after 6 hours.}
+\begin{figure*}[htp] \centering
+\subfigure[WIA]{\label{fig:wiabreak}\includegraphics[width=0.50\textwidth]{figures/wia_breakdown.eps}}
+\hspace{1 em}
+\subfigure[APNN]{\label{fig:apnnbreak}\includegraphics[width=0.45\textwidth]{figures/apnn_breakdown.eps}}
+	\caption{Performance of Image Operations in SciDB versus the Baseline MPI
+Versions. All run-times are the average of 3 runs, with variation being within
+\~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish
+running even after 6 hours.}
 	\label{fig:breakdown}
 \end{figure*}
 
@@ -201,14 +319,27 @@ We now provide the timing breakdown for two of the operations of interest, the W
 \subsubsection{Iterators}
 
 \subsection{Improving SciDB}
-SciDB is many orders of magnitude slower than the corresponding MPI implementation and we conjecture the following reasons that contribute towards the slow performance of SciDB:
+SciDB is many orders of magnitude slower than the corresponding MPI
+implementation and we conjecture the following reasons that contribute towards
+the slow performance of SciDB:
 
 \begin{itemize}
-\item SciDB stores raw pixel values and is unable to take advantage of domain-specific image compression schemes such as JPEG. This leads to a rapid expansion of the number of images stored which, in turn leads to massive I/O traffic during loading and execution of operations in SciDB.
-\item Except for Convolution, all of the image processing operations studied require some kind of cross-join operation, with APNN requiring a cross-join across the image dimension, leading to massive increase in the amount of data to be materialized. 
-\end{itemize} 
+\item SciDB stores raw pixel values and is unable to take advantage of
+domain-specific image compression schemes such as JPEG. This leads to a rapid
+expansion of the number of images stored which, in turn leads to massive I/O
+traffic during loading and execution of operations in SciDB.
+\item Except for Convolution, all of the image processing operations studied
+require some kind of cross-join operation, with APNN requiring a cross-join
+across the image dimension, leading to massive increase in the amount of data
+to be materialized.
+\end{itemize}
 
-The idea of SciDB or other array databases to perform image processing is interesting as it allows for these operations to be expressed in the form of queries. However, given the lack of support for domain-specific compression formats and the extremely slow execution times, we believe there a lot of work to do before SciDB becomes a viable platform for image and video processing. 
+The idea of SciDB or other array databases to perform image processing is
+interesting as it allows for these operations to be expressed in the form of
+queries. However, given the lack of support for domain-specific compression
+formats and the extremely slow execution times, we believe there a lot of work
+to do before SciDB becomes a viable platform for image and video processing.
+
 \section{Conclusions}
 
 \bibliographystyle{acmsiggraph}
