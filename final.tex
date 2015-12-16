@@ -101,8 +101,8 @@ a \textit{lineage}).
 
 % Spark Programming Model
 A Spark user constructs a program by specifying a series of
-\texit{transformation} operations on immutable distributed collections (called
-\texit{RDDs}) that source their data from some stable storage (such as
+\textit{transformation} operations on immutable distributed collections (called
+\textit{RDDs}) that source their data from some stable storage (such as
 HDFS). Spark does not perform any of these transformations until an
 \textit{action} has been specified. Actions are operations which write data out
 to a stable storage system or return results back to the user's driver
@@ -111,9 +111,9 @@ program.
 % Spark Implementation
 
 Conceptually, Spark programs are split into two types of stages. The first type
-of stage, which they call a Result Stage, consists of series of point-wise
+of stage, called a Result Stage, consists of series of point-wise
 operations (such as map, filter, flatmap, etc.). The second type of stage,
-which they call a Shuffle Stage, is composed of mapper nodes which write key
+called a Shuffle Stage, is composed of mapper nodes which write key
 value pairs to local partitions followed by reducer nodes which fetch those
 partitions based upon an assigned key and perform some a reduction operation on
 all values belonging to a single key. The Shuffle Stage is exactly equivalent
@@ -218,11 +218,20 @@ the following operations:
 \subsection{High-performance map kernel}
 An image is not simply an array of bytes. Images represent a set of
 spatially-coherent samples over a regular grid. Processing an image into useful
-information requires acknowledging this representation.
+information requires acknowledging this representation. Due to this essential
+nature, algorithms which process images into information must perform
+computationally expensive convolutions which operate over a spatial
+extent. Convolutions exhibit high arithmetic intensity because the data
+required to compute an output value highly overlaps with the data required to
+compute neighboring output values. Thus after computing one value, the next
+value already has most of the data required in cache and only needs to
+perform the computation to compute itself.
+
+One type of highly popular algorithm that is used to extract information from
+images are deep, convolutional neural networks (CNNs). 
+% Ravi, describe CNNs
 
 \subsection{Clustering}
-
-%\subsection{Filter clustering}
 
 \section{Distributed collections on Legion}
 
