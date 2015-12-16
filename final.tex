@@ -90,6 +90,17 @@ map, filter, or reduce.
 
 
 \section{Workloads}
+Visual data applications contain a diverse set of operations, but a few of them
+stand out as particularly important and distinctly core components of the
+analysis algorithms they are a part of. In particular, two classes
+of operations that seem to span a significant amount of the space of important
+operations in visual data applications are: very compute-intensive kernels
+applied individually across an entire dataset, and aggregate,
+high-communication operations, like computing nearest neighbors or
+clustering. For a distributed computing framework to serve as a platform for
+creating performant applications that process large collections of images and
+videos, it must at least support very efficient and scalable implementations of
+the following operations:
 
 \subsection{High-performance map kernel}
 
@@ -108,6 +119,8 @@ map, filter, or reduce.
 \section{Evaluation}
 
 \subsection{Spark vs Legion}
+
+\subsubsection{Partition startup time}
 
 \subsection{SciDB vs MPI}
 
