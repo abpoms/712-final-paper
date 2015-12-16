@@ -87,8 +87,33 @@ map, filter, or reduce.
 \subsection{Legion}
 
 \subsection{SciDB}
+SciDB\cite{stonebraker2013scidb} is a computational array DBMS designed to cater to the data storage needs of the scientific community. SciDB is designed to be multi-dimensional, with an array-based data model. It also provides support for data versioning and provenance which is a oft-cited feature requirement of data management systems from scientists.
 
+SciDB arrays are expressed in terms of two basic parameters:  the {\em dimensions} of the array, as well as {\em attributes} of the array. 
 
+An n-dimensional SciDB array has dimensions ($d_{1}$, $d_{2}$,$...$,$d_{n}$). The {\em size} of each dimension is the number of ordered values in that dimension. For example, a 2-dimensional array may have dimensions $i$ and $j$, each with values $(1, 2, 3, ..., 10)$ and $(1, 2, ..., 30)$ respectively. SciDB uses 64-bit integers to represent the values in each dimension, but also support non-integer dimensions such as variable-length strings or floating point integers. Furthermore, SciDB supports the notion of dimensional bounds. When the total value of a dimension is known in advance, the array can be declared with a {\em bounded} dimension. Sometimes, the cardinality of the array may not be known at array creation time. In such cases, the array can be declared with an {\em unbounded} dimension. It must be noted, however, that certain array operations are restricted to arrays with integer bounded dimensions.
+
+In addition to the dimension size attributes, the user must define two parameters for each dimension: the {\em chunk size} and {\em chunk overlap} parameters. These parameters affect the distribution of the array data among the worker nodes and need to be studied with respect to their effect on the performance of the image operations that we intend to deploy in SciDB.
+
+An n dimensional array in SciDB refers to a single cell or element of an array. However, each array in the SciDB array can hold multiple data values known as {\em attributes}. Each data value is referred to as an {\em attribute}, and can be any of the supported data types in SciDB.
+
+Therefore, during the creation of an array in SciDB (analogous to the declaration of a table schema in a relational database), the user must specify:
+
+\begin{itemize}
+\item An array name - a simple string which can be used to refer to the array in all operations involving the array.
+\item The dimensions of the array. The name and size of each dimension must be declared, with the exception of unbounded dimensions, whose size is represented using the asterisk character (\texttt{*}).
+\item At least one attribute for the array. Attributes can be added to an array as the result of an operation in SciDB.
+\end{itemize}
+
+An example of an array definition in SciDB is given below:
+
+\begin{lstlisting}[caption=Creating an Array in SciDB, frame=single]
+AQL% CREATE ARRAY open <val:double>[I=0:9,10,0,J=0:*,10,0];
+\end{lstlisting}
+
+In the example, the name of the array is \texttt{open}, with one attribute named \texttt{val}, of type \texttt{double}. This array consists of two dimensions, \texttt{I} and \texttt{J}. \texttt{I} is a bounded dimension with values ranging from 0 to 9, with chunk size 10 and chunk overlap 0. \texttt{J} another dimension similar to \texttt{I}, but the size of this dimension is unbounded.
+
+SciDB is designed to perform a number of operations on Arrays. An extensive listing of array operations is beyond the scope of this document, the interested reader is referred to the SciDB manual\cite{SciDBManual}. However, the operations that can be performed on an array can be broadly classified into the following: array selection, array operations (such as cross product, joins etc.), aggregation operations (which can return either arrays or scalars) and so on.
 \section{Workloads}
 Visual data applications contain a diverse set of operations, but a few of them
 stand out as particularly important and distinctly core components of the
