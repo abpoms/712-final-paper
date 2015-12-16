@@ -23,6 +23,14 @@
 % --------------- MATH PACKAGES -------------------------------
 \usepackage{amsmath,amsthm,amssymb}
 
+% -- Packages Added by Suhail
+\usepackage{graphicx,epstopdf,subfigure,url}
+\usepackage{listings}
+\lstset{basicstyle=\ttfamily\footnotesize,
+    frame=single,
+    breaklines=true
+}
+
 \title{Processing collections of images and videos on big-data frameworks}
 \author{Alex Poms, Ravi Teja Mullapudi, \\Suhail Rehman}
 \pdfauthor{Alex Poms, Ravi Teja Mullapudi, \\Suhail Rehman}
@@ -114,6 +122,7 @@ AQL% CREATE ARRAY open <val:double>[I=0:9,10,0,J=0:*,10,0];
 In the example, the name of the array is \texttt{open}, with one attribute named \texttt{val}, of type \texttt{double}. This array consists of two dimensions, \texttt{I} and \texttt{J}. \texttt{I} is a bounded dimension with values ranging from 0 to 9, with chunk size 10 and chunk overlap 0. \texttt{J} another dimension similar to \texttt{I}, but the size of this dimension is unbounded.
 
 SciDB is designed to perform a number of operations on Arrays. An extensive listing of array operations is beyond the scope of this document, the interested reader is referred to the SciDB manual\cite{SciDBManual}. However, the operations that can be performed on an array can be broadly classified into the following: array selection, array operations (such as cross product, joins etc.), aggregation operations (which can return either arrays or scalars) and so on.
+
 \section{Workloads}
 Visual data applications contain a diverse set of operations, but a few of them
 stand out as particularly important and distinctly core components of the
@@ -147,7 +156,39 @@ the following operations:
 
 \subsubsection{Partition startup time}
 
-\subsection{SciDB vs MPI}
+\subsection{SciDB vs MPI}\label{sec:clusterexp}
+In this section, we compare the runtime of the image processing operations in SciDB against their MPI counterparts. 
+
+\begin{figure*}[htp]
+\centering
+	\subfigure[WIA]{\label{fig:wia}\includegraphics[width=0.45\textwidth]{figures/wia.eps}} \hspace{1 em}
+    \subfigure[IPE]{\label{fig:ipe}\includegraphics[width=0.4\textwidth]{figures/ipe.eps}}
+	\subfigure[CONV]{\label{fig:conv}\includegraphics[width=0.5\textwidth]{figures/convo.eps}} \hspace{1 em}
+    \subfigure[APNN]{\label{fig:apnn}\includegraphics[width=0.85\textwidth]{figures/apnn.eps}}
+	\caption{Performance of Image Operations in SciDB versus the Baseline MPI Versions. All run-times are the average of 3 runs, with variation being within \~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish running even after 6 hours.}
+	\label{fig:mpi_result}
+\end{figure*}
+
+\textbf{Weighted Image Average}: In Figure \ref{fig:wia}, we see the runtime of SciDB for the WIA benchmark for 10, 100 and 1000 images on the 16 node cluster. The MPI version of this operation is roughly between $21\times$ to $91\times$ faster than the SciDB counterpart for the same operation.
+
+\textbf{Image Patch Extraction}: 
+In Figure \ref{fig:ipe}, we see the runtime of SciDB for the IPE benchmark (fixed patches) when varying the dataset size. Unlike the WIA benchmark, where the entire image volume was flattened to a single image, the IPE benchmark shows significant improvement in runtime and is within an order of magnitude in terms of performance when compared to the baseline MPI version, as the $100\times100$ image patch extraction and averaging of a 1000 1080p images is only $\sim 2.14\times$ slower than its corresponding MPI version.
+
+\textbf{Convolution} In Figure \ref{fig:conv}, we compare the performance of the MPI baseline that performs convolution on a set of images against the SciDB \texttt{window()} function, which performs the equivalent operation. Again, SciDB is an order of magnitude slower than the MPI implementation across the board.
+
+\textbf{All Pairs Nearest Neighbours}: For the APNN benchmark, we perform the APNN step with an additional set of images: 10, 100 and 1000 64x64 thumbnails (Figure \ref{fig:apnn}. The missing data-points indicate SciDB failing to finish execution even after ~6 hours of runtime. 
+
+
+\subsubsection{Timing Breakdown and Analysis}\label{sec:breakdown}
+We now provide the timing breakdown for two of the operations of interest, the WIA and APNN benchmarks in Figure \ref{fig:breakdown}. We can see from the figures that the runtime for these queries is dominated by the cross join query, more so for APNN.
+
+\begin{figure*}[htp]
+\centering
+	\subfigure[WIA]{\label{fig:wiabreak}\includegraphics[width=0.50\textwidth]{figures/wia_breakdown.eps}} \hspace{1 em}
+    \subfigure[APNN]{\label{fig:apnnbreak}\includegraphics[width=0.45\textwidth]{figures/apnn_breakdown.eps}}
+	\caption{Performance of Image Operations in SciDB versus the Baseline MPI Versions. All run-times are the average of 3 runs, with variation being within \~2\% of the actual runtime. APNN benchmarks for larger datasets did not finish running even after 6 hours.}
+	\label{fig:breakdown}
+\end{figure*}
 
 \section{Discussion}
 
@@ -160,7 +201,14 @@ the following operations:
 \subsubsection{Iterators}
 
 \subsection{Improving SciDB}
+SciDB is many orders of magnitude slower than the corresponding MPI implementation and we conjecture the following reasons that contribute towards the slow performance of SciDB:
 
+\begin{itemize}
+\item SciDB stores raw pixel values and is unable to take advantage of domain-specific image compression schemes such as JPEG. This leads to a rapid expansion of the number of images stored which, in turn leads to massive I/O traffic during loading and execution of operations in SciDB.
+\item Except for Convolution, all of the image processing operations studied require some kind of cross-join operation, with APNN requiring a cross-join across the image dimension, leading to massive increase in the amount of data to be materialized. 
+\end{itemize} 
+
+The idea of SciDB or other array databases to perform image processing is interesting as it allows for these operations to be expressed in the form of queries. However, given the lack of support for domain-specific compression formats and the extremely slow execution times, we believe there a lot of work to do before SciDB becomes a viable platform for image and video processing. 
 \section{Conclusions}
 
 \bibliographystyle{acmsiggraph}
