@@ -417,7 +417,7 @@ analysis runtime.
 \end{figure}
 
 The primary discrepancy for the reduced performance in Figure \ref{fig:scaling}
-for the Legion-based framework is due to our implementation of the IO , we 
+for the Legion-based framework is due to our implementation of the IO , we
 
 \subsubsection{Communication overhead}
 
@@ -507,11 +507,10 @@ running even after 6 hours.}
 
 \subsection{Merging two worlds}
 
-From our experience in using both frameworks Legion and Spark for implementing
-visual computing workloads, we have identified the characteristics of each of
-the systems that are beneficial for such workloads. We discuss the various
-design choices a future system needs to address and what we believe are good
-choices to explore.
+From our experience in both frameworks namely Legion and Spark, we have
+identified the characteristics of these systems that are beneficial for visual
+computing workloads. We discuss the various design choices a future system needs
+to address in the context of these characteristics.
 
 \subsubsection{Mapping}
 Mapping is the process of assigning partitions or tasks to each node. Legion
