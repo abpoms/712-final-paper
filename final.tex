@@ -88,7 +88,7 @@ Server \cite{li2014scaling}, generally lack the flexibility in their
 programming model to allow direct incorporation of streaming operations like
 map, filter, or reduce.
 
-\section{Background}
+\section{Background and Related Work}
 
 \subsection{Spark}
 Spark \cite{zaharia2012resilient} is a large-scale data processing framework
@@ -247,25 +247,59 @@ choice because it is equivalent to the Krizkevsky et al. network topology
 
 \subsection{Clustering}
 
-While analyzing a large collections of images a operation the frequently comes
-up is finding similar images or discovering groups of images that are similar.
-Both these operations involve computing distances between image representations
-like feature vectors or even raw images themselves. Two algorithms that are
-representative of aggregate operations on images are k-nearest neighbors and
-k-means. The k-nearest neighbors algorithm finds the k nearest neighbors to each
-item in the collection. An item in a collection could be an image a or a feature
-vector representing the image. Similarly k-means algorithm finds k
-representative items in the data set. Unlike map operations which do not involve
-complex communication partitions, these operations need to be decomposed
-carefully for controlling working set sizes and maintaining locality.
+While analyzing a large collections of images, an operation that frequently
+arises is finding similar images or discovering groups of images that are
+similar. Both these operations involve computing distances between image
+representations like feature vectors or even raw images themselves. Two
+algorithms that are representative of aggregate operations on images are
+k-nearest neighbors and k-means. The k-nearest neighbors algorithm finds the k
+nearest neighbors to each item in the collection. An item in a collection could
+be an image a or a feature vector representing the image. Similarly k-means
+algorithm finds k representative items in the data set. Unlike map operations
+which do not involve complex communication partitions, these operations need to
+be decomposed carefully for controlling working set sizes and maintaining
+locality.
 
 \section{Distributed collections on Legion}
+
+At a high level, research in high-performance distributed systems for data
+analysis can be split into three camps. The first is the distributed systems
+community, from which systems like Spark, MapReduce, and the Parameter Server
+hail from. The areas of focus in this community that we see as having a large
+impact on the big-data frameworks they have produced are fault-tolerance,
+programming models that improve programmer productivity, and out-of-core
+processing of data.
+
+The second is the Supercomputing community, from which frameworks like MPI and
+Legion \cite{bauer2012legion} originate. The values that the Supercomputing
+community holds which are also important for visual data applications are
+high-performance and compute-intensive tasks that fully utilize the machine,
+regions which explicitly model data placement and layout, and complicated,
+data-dependent task graphs.
+
+The third is the Database community, of which systems like PostgreSQL and SciDB
+are descendents of. Databases like SciDB hold out promise of a single system
+that could support the complicated communication patterns of traditional
+relational algebra operations, such as joins, with the high-performance
+distributed processing required for computing on array-like data.
+
+All three community's lines of research have produced research artifacts which
+have properties that when combined could produce a system which is able to
+efficiently and elegantly express many visual data applications. Our current
+implementation of a distributed collections abstraction on top of Legion is a
+first step toward taking some of the properties we have identified in the
+disparate communities and trying to merge them together. We have chosen Legion
+as a base framework because we believe that it provides a low-level layer on
+which abstractions like the distributed collections provided by Spark can be
+implemented using. It is not clear how using a system like SciDB or Spark as a
+base would allow the system to provide the type of functionality that
+the Supercomputing community's system provide.
 
 \subsection{API}
 
 The current interface we provide can be roughly categorized into traditional,
 data-parallel collection operations and aggregate, domain-specific
-operations.
+operations. 
 
 \subsubsection{Data-parallel operations}
 Our data-parallel operations are inspired by Spark and are the
@@ -307,7 +341,17 @@ performance.
 
 \subsection{Task scheduling}
 
-\subsubsection{KMeans Implementation}
+One of the most important advantages to implementing our distributed
+collections abstraction on top of Legion is 
+
+\subsubsection{K Nearest Neighbors Implementation}
+
+\begin{figure*}
+\label{fig:knn}\includegraphics[width=0.45\textwidth]{figures/knn}
+\end{figure*}
+
+
+
 
 \section{Evaluation}
 
@@ -318,8 +362,8 @@ performance.
 \subsubsection{High-performance Map Kernel}
 
 
-\begin{figure*}[htp]
-\label{fig:scaling}\includegraphics[width=0.5\textwidth]{figures/scaling.png}
+\begin{figure*}
+\label{fig:scaling}\includegraphics[width=0.45\textwidth]{figures/scaling}
 \end{figure*}
 
 
