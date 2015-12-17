@@ -473,8 +473,15 @@ for an user that is unaware of the target system and requires reasoning about
 issues that are orthogonal to the algorithm. We believe that providing good
 automatic mapping like Spark is one of the key ingredients going forward.
 
-
 \subsubsection{Working set size}
+Legion is primarily designed for applications whose working set fits in the
+aggregate memory of all the systems in the distributed cluster. The
+intermediates generated while working on large image collections can easily
+exceed the aggregate memory of the cluster. Spark on the other hand is designed
+with out-of-core data as a primary concern hence the support for backing
+intermediates to disk and materializing back from disk are seamless. Bridging
+this gap requires adding support for disk backed regions in Legion which is an
+avenue for further investigation.
 
 \subsubsection{Data allocation}
 
