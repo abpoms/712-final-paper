@@ -241,10 +241,6 @@ be viewed as mapping a CNN on the entire set of input images. The layers in CNN
 especially the convolutions are very compute intensive and need highly optimized
 implementations which utilize all the hardware resources.
 
-The MIT Places-Hybrid network \cite{zhou2014learning} is our neural network of
-choice because it is equivalent to the Krizkevsky et al. network topology
-\cite{NIPS2012_4824} and has been used by modern visual data applications.
-
 \subsection{Clustering}
 
 While analyzing a large collections of images, an operation that frequently
@@ -327,7 +323,12 @@ predicate.
 \end{itemize}
 
 These operations are exactly the same as provided by other data-parallel
-systems except for the \textit{load} and \textit{save} operations.
+systems except for the \textit{load} and \textit{save} operations. The load and
+save operations provide a way for the system to automatically incorporate an
+implementation-defined form of storage that can be optimized based on the type
+of elements in a distributed collection. For example, if a collection contains
+images or videos, the system can automatically infer that and compress the data
+items using a perceptual compression format such as PNG or JPEG.
 
 \subsubsection{Aggregate Domain-Specific operations}
 Our system provides a set of specialized operators for the domain-specific
@@ -372,7 +373,7 @@ performance.
 \subsection{Task scheduling}
 
 One of the most important advantages to implementing our distributed
-collections abstraction on top of Legion is it allows us to easily schedule
+collection abstraction on top of Legion is it allows us to easily schedule
 operations on the underlying representation of the distributed collections
 which contain complex and dynamic read and write dependencies. While it is
 possible to implement a diverse set of aggregate operations on top of the
@@ -402,24 +403,61 @@ analysis runtime.
 
 \section{Evaluation}
 
+The evaluation we performed is split into two distinct parts: one for directly
+testing Spark against Legion, and another for testing SciDB vs MPI. We
+separated our evaluation into these two parts because we observed early on that
+the performance difference between SciDB and Spark/Legion was so many orders of
+magnitude off that it did not seem fruitful to directly compare the two. That
+said, it would have been nice to replicate the MPI implementations used to
+compare against SciDB for the experiment we performed with Legion and Spark,
+but time did not permit; we hope to explore this in future work.
+
 \subsection{Spark vs Legion}
+
+Cloud-based clusters are increasingly growing in popularity, especially for
+small teams or individuals which are interested in running an analysis on data
+but do not have the capital or need to purchase and administrate a large number
+of machines. This type of use case is especially important for visual data
+analysis because computer vision researchers, astrophysics or biologists, and
+governmental organizations who wish to analyze their large collections of
+images and videos are likely to fall into the aforementioned category.
 
 \subsubsection{Experimental Setup}
 
-\subsubsection{High-performance Map Kernel}
+Our evaluation of Spark and Legion was performed on Google Compute Engine, a
+cloud Infrastructure-as-a-service product. Our dataset consists of 5151 images
+stored on Google Cloud Storage that were extracted from several videos. For the
+following experiment, we ran each test on a cluster of 20 Intel Ivy Bridge
+nodes with 4 virtual CPUs (hyperthreads) and 15GB of memory. For Spark, we
+launched a single executor per node using the YARN scheduling framework. For
+our Legion framework, we ran one Legion task per node.
 
+\subsubsection{High-performance Map Kernel}
 
 \begin{figure}
 \includegraphics[width=0.45\textwidth]{figures/scaling}
 \caption{Scaling of Spark and the Legion framework on a high-performance map
-  kernel }
+  kernel}
 \label{fig:scaling}
 \end{figure}
 
-The primary discrepancy for the reduced performance in Figure \ref{fig:scaling}
-for the Legion-based framework is due to our implementation of the IO , we
+In this experiment, we loaded all 5151 images into a distributed collection in
+both our Legion framework and in Spark and then compute a feature vector for
+each image by mapping a neural network across every image. The MIT
+Places-Hybrid network \cite{zhou2014learning} is our neural network of choice
+because it is equivalent to the Krizkevsky et al. network topology
+\cite{NIPS2012_4824} and has been used by modern visual data applications. This
+is not the largest network that is used in the literature, but represents a
+nice middle ground.
+
+While both frameworks achieve very similar scaling, the Legion framework does
+not exhibit the faster total runtime that we expected to see when running
+against Spark. The primary discrepancy for the reduced performance in Figure
+\ref{fig:scaling} for the Legion-based framework is due to our implementation
+of the IO operations for retrieving data from Google Cloud Storage.
 
 \subsubsection{Communication overhead}
+
 
 % Spark:
 %% Communication: 11.677 seconds, 13.44%
@@ -428,10 +466,19 @@ for the Legion-based framework is due to our implementation of the IO , we
 %% Communication: 35.2768 seconds, 32.28%
 %% Computation: 73.9968 seconds, 67.72%
 
+The issue is that in our implementation we wait for all of the communication to
+be done for retrieving an image from Google Cloud Storage before performing any
+other operations. This results in the total time taken per element to be the
+sum of the communication and the computation performed. Spark does not suffer
+this issue because they overlap communication and computation by pipelining
+their communication operations.
+
 \subsubsection{Partition startup time}
 
-\begin{figure*}[htp]
+\begin{figure*}[htp] \centering
 \label{fig:scaling}\includegraphics[width=\textwidth]{figures/partition_dist}
+\caption{Distribution of task times for varying partition sizes on Spark}
+\label{fig:partition}
 \end{figure*}
 
 \subsection{SciDB vs MPI}\label{sec:clusterexp}
@@ -498,6 +545,8 @@ running even after 6 hours.}
 \section{Discussion}
 
 \subsection{Native code on Spark}
+Integrating native code into Spark prove to require a tremendous amount of
+effort.
 
 \subsection{Improving distributed collection abstractions}
 
@@ -530,9 +579,9 @@ aggregate memory of all the systems in the distributed cluster. The
 intermediates generated while working on large image collections can easily
 exceed the aggregate memory of the cluster. Spark on the other hand is designed
 with out-of-core data as a primary concern hence the support for backing
-intermediates to disk and materializing back from disk are seamless. Bridging
-this gap requires adding support for disk backed regions in Legion which is an
-avenue for further investigation.
+intermediates to disk and materializing them back from disk are
+seamless. Bridging this gap requires adding support for disk backed regions in
+Legion which is an avenue for further investigation.
 
 \subsubsection{High-performance Kernels}
 As we have discussed earlier a lot of visual computing operations are compute
