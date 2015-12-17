@@ -299,7 +299,7 @@ the Supercomputing community's system provide.
 
 The current interface we provide can be roughly categorized into traditional,
 data-parallel collection operations and aggregate, domain-specific
-operations. 
+operations.
 
 \subsubsection{Data-parallel operations}
 Our data-parallel operations are inspired by Spark and are the
@@ -314,8 +314,8 @@ algorithms which can not be efficiently expressed using streaming
 operations. The operations are:
 
 \begin{itemize}
-\item K Nearest Neighbors - 
-\item K Means - 
+\item K Nearest Neighbors -
+\item K Means -
 \end{itemize}
 
 The specific operations were chosen because they contain communication patterns
@@ -342,7 +342,7 @@ performance.
 \subsection{Task scheduling}
 
 One of the most important advantages to implementing our distributed
-collections abstraction on top of Legion is 
+collections abstraction on top of Legion is
 
 \subsubsection{K Nearest Neighbors Implementation}
 
@@ -369,7 +369,7 @@ collections abstraction on top of Legion is
 
 \subsubsection{Communication overhead}
 
-% Spark: 
+% Spark:
 %% Communication: 11.677 seconds, 13.44%
 %% Computation: 75.181 seconds, 86.5%
 % Legion:
@@ -378,7 +378,7 @@ collections abstraction on top of Legion is
 
 \subsubsection{Partition startup time}
 
-\begin{figure*}[htp] 
+\begin{figure*}[htp]
 \label{fig:scaling}\includegraphics[width=\textwidth]{figures/partition_dist}
 \end{figure*}
 
@@ -455,7 +455,24 @@ running even after 6 hours.}
 
 \subsection{Merging two worlds}
 
+From our experience in using both frameworks Legion and Spark for implementing
+visual computing workloads, we have identified the characteristics of each of
+the systems that are beneficial for such workloads. We discuss the various
+design choices a future system needs to address and what we believe are good
+choices to explore.
+
 \subsubsection{Mapping}
+Mapping is the process of assigning partitions or tasks to each node. Legion
+provides a default mapper which does a naive mapping that maximizes parallelism.
+A Legion user is expected to make partitioning and mapping decisions based on
+understanding of the application as well as the target cluster configuration.
+Spark on the other hand only gives control of the partitioning and does the
+scheduling automatically. Providing the ability to specify a mapping gives
+flexibility and enables potential optimization. However, it is very cumbersome
+for an user that is unaware of the target system and requires reasoning about
+issues that are orthogonal to the algorithm. We believe that providing good
+automatic mapping like Spark is one of the key ingredients going forward.
+
 
 \subsubsection{Working set size}
 
