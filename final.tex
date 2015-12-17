@@ -471,12 +471,6 @@ divided by the number of nodes.
     Computation & 75.181 s, 86.5\% & 73.9968 s, 67.72\% \\ \hline
     \end{tabular}
 \end{center}
-% Spark:
-%% Communication: 11.677 seconds, 13.44%
-%% Computation: 75.181 seconds, 86.5%
-% Legion:
-%% Communication: 35.2768 seconds, 32.28%
-%% Computation: 73.9968 seconds, 67.72%
 
 The issue is that in our implementation we wait for all of the communication to
 be done for retrieving an image from Google Cloud Storage before performing any
@@ -593,6 +587,37 @@ interesting as it allows for these operations to be expressed in the form of
 queries. However, given the lack of support for domain-specific compression
 formats and the extremely slow execution times, we believe there a lot of work
 to do before SciDB becomes a viable platform for image and video processing.
+
+\subsection{Improving distributed collection abstractions}
+From our investigations into exploring Spark's implementation of a distributed
+collection abstraction and in our own implementation of one, we have discovered
+two ideas which could significantly improve the performance of future
+distributed collection implementations.
+
+\subsubsection{Batch size}
+Spark and our system operate on single elements of the input at a time. While
+this minimizes the working set for a single worker, it does not allow the
+system to maximally utilize the vector units or parallelism on the
+machine. Spark achieves parallelism by simply spawning a worker for each core
+on the machine but this approach leads to high overhead from multiple
+processors contending for the same cache. The ideal approach is to batch
+several elements together so that the system can perform vector operations that
+operate on several elements of the input at once and multiple cores can
+coordinate to maximally occupy cache without walking over each other.
+
+\subsubsection{Iterators}
+A common approach for data-parallel systems, and the approach Spark and the
+Legion framework take, to supporting a series of lazily computed operations
+is to chain them together using the iterator software pattern. Unfortunately,
+this approach leads to high overhead when the individual operations that the
+iterators are performing are small because for each element to be computed, it
+must walk a list of iterators backwards and forwards, incurring function call
+overhead and pointer jumping cache issues. An interesting future direction for
+work is instead analyzing series of operations and dynamically performing code
+generation of nested loops which implement the exact same set of operations the
+iterator approach does. This reduces overhead, preserved cache locality, and
+allows an implementation to easily block across dimensions of the generated
+loops to vectorize and parallelize.
 
 \subsection{Merging two worlds}
 
