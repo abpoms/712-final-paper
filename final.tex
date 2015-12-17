@@ -241,11 +241,53 @@ be viewed as mapping a CNN on the entire set of input images. The layers in CNN
 especially the convolutions are very compute intensive and need highly optimized
 implementations which utilize all the hardware resources.
 
+The MIT Places-Hybrid network \cite{zhou2014learning} is our neural network of
+choice because it is equivalent to the Krizkevsky et al. network topology
+\cite{NIPS2012_4824} and has been used by modern visual data applications.
+
 \subsection{Clustering}
 
 \section{Distributed collections on Legion}
 
-\subsection{}
+\subsection{API}
+
+The current interface we provide can be roughly categorized into traditional,
+data-parallel collection operations and aggregate, domain-specific
+operations.
+
+\subsubsection{Data-parallel operations}
+Our data-parallel operations are inspired by Spark and are the
+following:
+
+\textbf{map}, \textbf{filter}, \textbf{flatmap}, \textbf{reduce},
+\textbf{collect}
+
+\subsubsection{Aggregate Domain-Specific operations}
+Our system provides a set of specialized operators for the domain-specific
+algorithms which can not be efficiently expressed using streaming
+operations. The operations are:
+
+\begin{itemize}
+\item K Nearest Neighbors - 
+\item K Means - 
+\end{itemize}
+
+The specific operations were chosen because they contain communication patterns
+common to aggregate operations in many visual computing applications. While the
+exact functionality they provide is somewhat limited, their implementation will
+help reveal issues in achieving high-performance on these types of specialized
+aggregate operations. The major outstanding question with regards to
+domain-specific functions is whether the specialized operators will ultimately
+be a set of highly optimized functions provided as built-in operations or if
+there exists some common primitives which a significant portion of the
+operators can be composed of. The second possibility is more attractive because
+it means that the system could optimize composition of the routines and users
+could easily extend the system with other algorithms. As papers like Halide
+have shown, the composition of two highly optimized routines does not always
+result in an optimal solution. Common primitives would mean that the system
+could introspect dependent routines and co-schedule them for better
+performance.
+
 
 % impedance mismatch with fixed sized regions
 %% Larger than memory
@@ -253,18 +295,36 @@ implementations which utilize all the hardware resources.
 
 \subsection{Task scheduling}
 
-\subsection{KMeans Implementation}
+\subsubsection{KMeans Implementation}
 
 \section{Evaluation}
 
 \subsection{Spark vs Legion}
 
+\subsubsection{Experimental Setup}
+
 \subsubsection{High-performance Map Kernel}
-% Communication latency
-%% Spark 86.5% compute
-%% Legion 68% compute
+
+
+\begin{figure*}[htp]
+\label{fig:scaling}\includegraphics[width=0.5\textwidth]{figures/scaling.png}
+\end{figure*}
+
+
+\subsubsection{Communication overhead}
+
+% Spark: 
+%% Communication: 11.677 seconds, 13.44%
+%% Computation: 75.181 seconds, 86.5%
+% Legion:
+%% Communication: 35.2768 seconds, 32.28%
+%% Computation: 73.9968 seconds, 67.72%
 
 \subsubsection{Partition startup time}
+
+\begin{figure*}[htp] 
+\label{fig:scaling}\includegraphics[width=\textwidth]{figures/partition_dist}
+\end{figure*}
 
 \subsection{SciDB vs MPI}\label{sec:clusterexp}
 In this section, we compare the runtime of the image processing operations in
@@ -336,6 +396,16 @@ running even after 6 hours.}
 \subsubsection{Batch size}
 
 \subsubsection{Iterators}
+
+\subsection{Merging two worlds}
+
+\subsubsection{Mapping}
+
+\subsubsection{Working set size}
+
+\subsubsection{Data allocation}
+
+\subsubsection{High-performance Kernels}
 
 \subsection{Improving SciDB}
 SciDB is many orders of magnitude slower than the corresponding MPI
