@@ -483,9 +483,30 @@ intermediates to disk and materializing back from disk are seamless. Bridging
 this gap requires adding support for disk backed regions in Legion which is an
 avenue for further investigation.
 
-\subsubsection{Data allocation}
-
 \subsubsection{High-performance Kernels}
+As we have discussed earlier a lot of visual computing operations are compute
+intensive. Support for high-performance kernels implementing these operations is
+very important in efficiently doing these operations. The Spark ecosystem is
+tied to the Java Virtual Machine (JVM) which precludes utilizing many of the
+high-performance kernels written in C++/CUDA natively. Getting around this
+requires piping a Spark partition to an external process to  perform the
+high performance kernel, as we done in the case of the high performance map.
+This process is quite cumbersome and tedious since it requires stitching
+together many systems. Legion is built in C++ and with heterogeneity as a first
+class concern which enables integration with high performance kernels
+seamlessly.
+
+\subsubsection{Data allocation}
+The size of regions in Legion is expected to be know at the time of allocation.
+This is not an impediment to applications in which the number of items in a
+collection is known upfront. For example, the number of points in a 3d-grid on
+which a simulation is being run. However, this does not hold for processing
+visual data like videos and images. Consider the case where each item in a
+collection is a image and a flatMap operation which returns all the bounding
+boxes of an object location in an image. One cannot know the dimensions of the
+flatMap output region without computing the operation. Spark RDDs do not have
+such restrictions and are completely defined at runtime.
+
 
 \subsection{Improving SciDB}
 SciDB is many orders of magnitude slower than the corresponding MPI
