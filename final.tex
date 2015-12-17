@@ -132,6 +132,29 @@ immediately after they are computed.
 % Spark issues
 
 \subsection{Legion}
+Legion is a Supercomputing framework for in-memory computation on task graphs
+with dynamic read and write dependencies. A key feature of Legion is that it
+represents its data in \textit{Logical Regions} which have both an \textit{Index Space} and a
+\textit{Field Space}. The Index Space can be thought of as the rows of a table in SQL
+and the Field Space can be thought of as the columns of a SQL table. However,
+unlike SQL, the Field Space and Region abstraction allows the Legion system to
+determine where and how to layout data depending on the type of task that is
+running. For example, a user might create a task which has both CPU and GPU
+variants. If the application wishes to run the task, Legion will determine if a
+CPU or GPU is available, map the task to one of those units, and then
+automatically layout the data for that task using Structure of Arrays, Array of
+Structures, or Structure of Arrays of Structures based upon the specific task
+implementations access pattern. This key attribute allows Legion to efficiently
+support applications that want to utilize the heterogeneous resources available
+on modern clusters.
+
+Users write legion programs by registering a set of tasks upfront and then
+executing those tasks while creating Logical Regions which store task
+data. Legion automatically determines how to order a set of tasks based upon
+the read and write privileges it requests for a specific region. When a task is
+scheduled to launch, Legion handles the data movement and layout of the data
+required by the
+task.
 
 \subsection{SciDB}
 SciDB\cite{stonebraker2013scidb} is a computational array DBMS designed to
@@ -621,7 +644,7 @@ loops to vectorize and parallelize.
 
 \subsection{Merging two worlds}
 
-From our experience in both frameworks namely Legion and Spark, we have
+From our experience in both frameworks, namely Legion and Spark, we have
 identified the characteristics of these systems that are beneficial for visual
 computing workloads. We discuss the various design choices a future system needs
 to address in the context of these characteristics.
@@ -655,11 +678,11 @@ very important in efficiently doing these operations. The Spark ecosystem is
 tied to the Java Virtual Machine (JVM) which precludes utilizing many of the
 high-performance kernels written in C++/CUDA natively. Getting around this
 requires piping a Spark partition to an external process to  perform the
-high performance kernel, as we done in the case of the high performance map.
-This process is quite cumbersome and tedious since it requires stitching
+high performance kernel, as we have done in the case of the high performance
+map. This process is quite cumbersome and tedious since it requires stitching
 together many systems. Legion is built in C++ and with heterogeneity as a first
-class concern which enables integration with high performance kernels
-seamlessly.
+class concern which makes integration with high performance kernels
+seamless.
 
 \subsubsection{Data allocation}
 The size of regions in Legion is expected to be know at the time of allocation.
