@@ -10,7 +10,7 @@
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 
-%%% Used by the ``review'' variation; the online ID will be printed on 
+%%% Used by the ``review'' variation; the online ID will be printed on
 %%% every page of the content.
 
 \TOGonlineid{45678}
@@ -227,9 +227,19 @@ compute neighboring output values. Thus after computing one value, the next
 value already has most of the data required in cache and only needs to
 perform the computation to compute itself.
 
-One type of highly popular algorithm that is used to extract information from
-images are deep, convolutional neural networks (CNNs). 
-% Ravi, describe CNNs
+Deep Convolutional Neural Networks (CNNs) have recently become a very effective
+tools for extracting information from images. CNNs are trained for various
+computer vision tasks like object classification, recognition and detection.
+Networks which are used in these tasks are trained over massive datasets and
+take weeks to train. However, networks trained for a task can be used to extract
+features from an image which are useful for other computer vision tasks. CNNs
+are organized as layers which successively process an input image. Features can
+be extracted from an image by evaluating a trained network on input image and
+taking the output of one of the layer. It is very common for a vision algorithm
+to begin by evaluating a CNN on the entire dataset as the first step. This can
+be viewed as mapping a CNN on the entire set of input images. The layers in CNN
+especially the convolutions are very compute intensive and need highly optimized
+implementations which utilize all the hardware resources.
 
 \subsection{Clustering}
 
