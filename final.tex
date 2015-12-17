@@ -458,7 +458,19 @@ of the IO operations for retrieving data from Google Cloud Storage.
 
 \subsubsection{Communication overhead}
 
-
+To discover the exact source of unexpected performance numbers for the Legion
+framework, we inserted timing calls into the implementation of the Spark load
+and map operations and in our Legion framework load and map operations. For
+each operation, we summed up all the time it took to compute each stage and
+divided by the number of nodes.
+\begin{center}
+    \begin{tabular}{| l | l | l |}
+    \hline
+    & Spark & Legion \\ \hline
+    Communication & 11.677 s, 13.44\% & 35.27 s, 32.28\% \\ \hline
+    Computation & 75.181 s, 86.5\% & 73.9968 s, 67.72\% \\ \hline
+    \end{tabular}
+\end{center}
 % Spark:
 %% Communication: 11.677 seconds, 13.44%
 %% Computation: 75.181 seconds, 86.5%
@@ -471,7 +483,10 @@ be done for retrieving an image from Google Cloud Storage before performing any
 other operations. This results in the total time taken per element to be the
 sum of the communication and the computation performed. Spark does not suffer
 this issue because they overlap communication and computation by pipelining
-their communication operations.
+their communication operations. This is evidenced in the figure above where the
+total time taken to perform the computation for our framework and Spark is
+nearly identical but we spend a large fraction of time performing communication
+because it is not batched together with multiple communication requests.
 
 \subsubsection{Partition startup time}
 
@@ -480,6 +495,19 @@ their communication operations.
 \caption{Distribution of task times for varying partition sizes on Spark}
 \label{fig:partition}
 \end{figure*}
+
+In implementing the neural network in Spark, we had to utilize the
+\textit{pipe} operator to execute the native code that ran the neural network
+framework. Besides the increase in code complexity this introduces, having to
+startup an external program and initialize a neural network for each partition
+of the collection results in high overhead per partition and a minimum startup
+cost. We measured this overhead by running the same experiment as before on 20
+nodes with Spark but varying the number of partitions. As can be seen in Figure
+\ref{fig:partition}, as we increase the number of partitions the number of
+tasks which take around 2500ms increases. One strategy to alleviate load
+balance from high variance in tasks is to introduce more partitions of your
+dataset. The artificial startup cost we see here limits that ability because
+smaller partitions are penalized by a minimum startup cost.
 
 \subsection{SciDB vs MPI}\label{sec:clusterexp}
 In this section, we compare the runtime of the image processing operations in
@@ -542,17 +570,29 @@ running even after 6 hours.}
 	\label{fig:breakdown}
 \end{figure*}
 
-\section{Discussion}
+\section{Discussion and Conclusion}
 
-\subsection{Native code on Spark}
-Integrating native code into Spark prove to require a tremendous amount of
-effort.
+\subsection{Improving SciDB}
+SciDB is many orders of magnitude slower than the corresponding MPI
+implementation and we conjecture the following reasons that contribute towards
+the slow performance of SciDB:
 
-\subsection{Improving distributed collection abstractions}
+\begin{itemize}
+\item SciDB stores raw pixel values and is unable to take advantage of
+domain-specific image compression schemes such as JPEG. This leads to a rapid
+expansion of the number of images stored which, in turn leads to massive I/O
+traffic during loading and execution of operations in SciDB.
+\item Except for Convolution, all of the image processing operations studied
+require some kind of cross-join operation, with APNN requiring a cross-join
+across the image dimension, leading to massive increase in the amount of data
+to be materialized.
+\end{itemize}
 
-\subsubsection{Batch size}
-
-\subsubsection{Iterators}
+The idea of SciDB or other array databases to perform image processing is
+interesting as it allows for these operations to be expressed in the form of
+queries. However, given the lack of support for domain-specific compression
+formats and the extremely slow execution times, we believe there a lot of work
+to do before SciDB becomes a viable platform for image and video processing.
 
 \subsection{Merging two worlds}
 
@@ -607,30 +647,6 @@ boxes of an object location in an image. One cannot know the dimensions of the
 flatMap output region without computing the operation. Spark RDDs do not have
 such restrictions and are completely defined at runtime.
 
-
-\subsection{Improving SciDB}
-SciDB is many orders of magnitude slower than the corresponding MPI
-implementation and we conjecture the following reasons that contribute towards
-the slow performance of SciDB:
-
-\begin{itemize}
-\item SciDB stores raw pixel values and is unable to take advantage of
-domain-specific image compression schemes such as JPEG. This leads to a rapid
-expansion of the number of images stored which, in turn leads to massive I/O
-traffic during loading and execution of operations in SciDB.
-\item Except for Convolution, all of the image processing operations studied
-require some kind of cross-join operation, with APNN requiring a cross-join
-across the image dimension, leading to massive increase in the amount of data
-to be materialized.
-\end{itemize}
-
-The idea of SciDB or other array databases to perform image processing is
-interesting as it allows for these operations to be expressed in the form of
-queries. However, given the lack of support for domain-specific compression
-formats and the extremely slow execution times, we believe there a lot of work
-to do before SciDB becomes a viable platform for image and video processing.
-
-\section{Conclusions}
 
 
 \bibliographystyle{acmsiggraph}
