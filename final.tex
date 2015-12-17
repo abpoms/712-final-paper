@@ -281,7 +281,9 @@ The third is the Database community, of which systems like PostgreSQL and SciDB
 are descendents of. Databases like SciDB hold out promise of a single system
 that could support the complicated communication patterns of traditional
 relational algebra operations, such as joins, with the high-performance
-distributed processing required for computing on array-like data.
+distributed processing required for computing on array-like data. However, as
+seen in our evaluation, the performance is currently not up to the level
+required of high-performance applications.
 
 All three community's lines of research have produced research artifacts which
 have properties that when combined could produce a system which is able to
@@ -297,16 +299,35 @@ the Supercomputing community's system provide.
 
 \subsection{API}
 
+Our system is built on top of Legion and thus is written in C++. The current
+implementation is compiled as an static library that can be linked into an
+application and is roughly 4500 lines of code. The user only needs to include
+two header files (one that defines the context and one that defines the
+collection operations) to start writing programs against it.
+
 The current interface we provide can be roughly categorized into traditional,
 data-parallel collection operations and aggregate, domain-specific
-operations.
+operations. The data-parallel operations are inspired by Spark and serve mainly
+to provide a nice programming model that will increase programmer productivity.
 
 \subsubsection{Data-parallel operations}
-Our data-parallel operations are inspired by Spark and are the
-following:
+The current set of data-parallel operations provided are the following:
 
-\textbf{map}, \textbf{filter}, \textbf{flatmap}, \textbf{reduce},
-\textbf{collect}
+\begin{itemize}
+\item \textbf{load} - loads an RDD from an implementation-defined storage.
+\item \textbf{map} - applies a function to each element in a collection.
+\item \textbf{filter} - returns all elements in a collection which fulfill a
+predicate.
+\item \textbf{flatmap} - linearizes all elements returned from applying a
+  function to the collection that returns a list.
+\item \textbf{reduce} - produces a single output value by successively combining
+  elements using a function.
+\item \textbf{collect} - materializes a collection in the user's driver program.
+\item \textbf{save} - saves an RDD in implementation-defined storage.
+\end{itemize}
+
+These operations are exactly the same as provided by other data-parallel
+systems except for the \textit{load} and \textit{save} operations.
 
 \subsubsection{Aggregate Domain-Specific operations}
 Our system provides a set of specialized operators for the domain-specific
@@ -314,8 +335,18 @@ algorithms which can not be efficiently expressed using streaming
 operations. The operations are:
 
 \begin{itemize}
-\item K Nearest Neighbors -
-\item K Means -
+\item \textbf{K Nearest Neighbors} - given a collection of elements and a
+  function for computing how similar two elements are to each other, returns a
+  collection of the same size as the input where each element holds a list
+  containing the K closest elements which matched to the element previously at
+  the same position
+\item \textbf{K Means} - for a collection of elements, typically vectors, which
+  can be added together and averaged, returns K vectors which represent the
+  ``mean'' vectors of the collection. This operations is performed by randomly
+  initializing K cluster centers and successively iterating by find the closest
+  points to each cluster center, averaging them together, and replacing the
+  cluster center with that value. The algorithm converges when the cluster
+  centers no longer move after being averaged.
 \end{itemize}
 
 The specific operations were chosen because they contain communication patterns
@@ -334,7 +365,6 @@ result in an optimal solution. Common primitives would mean that the system
 could introspect dependent routines and co-schedule them for better
 performance.
 
-
 % impedance mismatch with fixed sized regions
 %% Larger than memory
 %% Dynamic amplification and decimation
@@ -342,16 +372,33 @@ performance.
 \subsection{Task scheduling}
 
 One of the most important advantages to implementing our distributed
-collections abstraction on top of Legion is
+collections abstraction on top of Legion is it allows us to easily schedule
+operations on the underlying representation of the distributed collections
+which contain complex and dynamic read and write dependencies. While it is
+possible to implement a diverse set of aggregate operations on top of the
+primitives provided by a system like Spark, it is not true that the most
+efficient implementation can be efficiently expressed using those primitives.
 
 \subsubsection{K Nearest Neighbors Implementation}
 
-\begin{figure*}
-\label{fig:knn}\includegraphics[width=0.45\textwidth]{figures/knn}
-\end{figure*}
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{figures/knn}
+\caption{A K Nearest Neighbors implementation on top of Legion regions}
+\label{fig:knn}
+\end{figure}
 
-
-
+To illustrate what the implementation of a domain-specific aggregate operation
+looks like, we will briefly discuss our approach to K Nearest Neighbors. As you
+can see in Figure \ref{fig:knn}, the input to K Nearest Neighbors is a single
+collection of elements (seen in blue and orange) and the output is a collection
+of lists of length K (seen in red). Instead of launching a task for every
+pairwise element in the input collection or materializing all of them and
+streaming over the pairs, we partition the input into fixed size chunks and
+launch \(N^2\) tasks where \(N\) is the number of chunks. Each of these tasks
+depends on a pair of chunks in the input as read dependencies (blue and orange)
+and a single output chunk as a write dependency (red). The dotted black arrows
+are implicit task dependencies determined automatically by Legion's dependence
+analysis runtime.
 
 \section{Evaluation}
 
@@ -362,10 +409,15 @@ collections abstraction on top of Legion is
 \subsubsection{High-performance Map Kernel}
 
 
-\begin{figure*}
-\label{fig:scaling}\includegraphics[width=0.45\textwidth]{figures/scaling}
-\end{figure*}
+\begin{figure}
+\includegraphics[width=0.45\textwidth]{figures/scaling}
+\caption{Scaling of Spark and the Legion framework on a high-performance map
+  kernel }
+\label{fig:scaling}
+\end{figure}
 
+The primary discrepancy for the reduced performance in Figure \ref{fig:scaling}
+for the Legion-based framework is due to our implementation of the IO , we 
 
 \subsubsection{Communication overhead}
 
@@ -531,6 +583,7 @@ formats and the extremely slow execution times, we believe there a lot of work
 to do before SciDB becomes a viable platform for image and video processing.
 
 \section{Conclusions}
+
 
 \bibliographystyle{acmsiggraph}
 \nocite{*}
