@@ -243,6 +243,18 @@ implementations which utilize all the hardware resources.
 
 \subsection{Clustering}
 
+While analyzing a large collections of images a operation the frequently comes
+up is finding similar images or discovering groups of images that are similar.
+Both these operations involve computing distances between image representations
+like feature vectors or even raw images themselves. Two algorithms that are
+representative of aggregate operations on images are k-nearest neighbors and
+k-means. The k-nearest neighbors algorithm finds the k nearest neighbors to each
+item in the collection. An item in a collection could be an image a or a feature
+vector representing the image. Similarly k-means algorithm finds k
+representative items in the data set. Unlike map operations which do not involve
+complex communication partitions, these operations need to be decomposed
+carefully for controlling working set sizes and maintaining locality.
+
 \section{Distributed collections on Legion}
 
 \subsection{}
